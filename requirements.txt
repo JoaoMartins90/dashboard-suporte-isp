@@ -1,0 +1,17 @@
+# Dependências diretas do projeto. As transitivas ficam por conta do pip.
+# Versões declaradas como mínimo, não fixas, para não travar o projeto em
+# releases de 2024 que já não têm wheel para as versões atuais do Python.
+
+# Interface e gráficos
+streamlit>=1.34
+plotly>=5.22
+
+# Manipulação de dados
+pandas>=2.2
+
+# Acesso ao banco
+SQLAlchemy>=2.0
+psycopg2-binary>=2.9        # driver do PostgreSQL; dispensável na base de exemplo
+
+# Configuração
+python-dotenv>=1.0
