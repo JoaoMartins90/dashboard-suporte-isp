@@ -4,28 +4,23 @@ from data_proc import processa_tabela_atendimentos, processa_tabela_bairros, ate
 import plotly.express as px
 
 
-# Base
 df_atendimentos = processa_tabela_atendimentos()
 df_bairros = processa_tabela_bairros()
 df_class = atendimento_classificacao()
 df_atendimento_os = atendimento_os()
 
-# Adicionando coluna 'em_os' no df_atendimentos
 df_atendimentos['em_os'] = df_atendimentos['codatendimento'].apply(lambda x: 'S' if x in df_atendimento_os['codatendimento'].values else 'N')
 
 
-# Mesclando dataframes
 df_final_1 = pd.merge(df_atendimentos, df_bairros, on='codbairro', how='left')
 df_final = pd.merge(df_final_1, df_class, on='codatclass', how='left')
 df_final = df_final.fillna('Indefinido')
 
-# Removendo linhas onde 'cliente_cadastrado' é 'Indefinido'
 df_final = df_final[df_final['cliente_cadastrado'] != 'Indefinido']
 
 df_filtrado = df_final
 df_filtrado_grafico = df_filtrado[df_filtrado['bairro'] != 'Indefinido']
 
-# Convertendo colunas de data
 df_final = df_final[df_final['dt_abertura'] != 'Indefinido']
 df_final['dt_abertura'] = pd.to_datetime(df_final['dt_abertura'], format='%d/%m/%Y')
 df_final['ano'] = df_final['dt_abertura'].dt.year
@@ -34,16 +29,14 @@ st.title('Dados Suporte')
 
 st.divider()
 
-# Filtro
+# Filtros
 st.sidebar.title('Filtros')
 with st.sidebar.expander('Operadores'):
     operadores_disponiveis = sorted(df_final['operador_abertura'].unique())
     operadores_selecionados = st.multiselect('Selecione os operadores', operadores_disponiveis, default=operadores_disponiveis)
 
 with st.sidebar.expander('Filtro por Período'):
-    # Sem 'value' o Streamlit assume a data de hoje, e a página abriria mostrando
-    # apenas os chamados do dia. O padrão é o período completo disponível.
-    start_date = st.date_input('Data de Início', min_value=df_final['dt_abertura'].min(), max_value=df_final['dt_abertura'].max(), value=df_final['dt_abertura'].min())
+    start_date = st.date_input('Data de Início', min_value=df_final['dt_abertura'].min(), max_value=df_final['dt_abertura'].max())
     end_date = st.date_input('Data de Fim', min_value=df_final['dt_abertura'].min(), max_value=df_final['dt_abertura'].max(), value=df_final['dt_abertura'].max())
 
 with st.sidebar.expander('Bairros'):
@@ -57,13 +50,10 @@ df_filtrado = df_filtrado[(df_filtrado['operador_abertura'].isin(operadores_sele
                           (df_filtrado['dt_abertura'] <= end_date) &
                           (df_filtrado['bairro'].isin(bairros_selecionados))]
 
-# Agrupamento de atendimentos por operador e período selecionado
 atendimentos_por_operador_periodo = df_filtrado.groupby('operador_abertura').size().reset_index(name='Número de Atendimentos por Operador')
 
-# Agrupamento de atendimentos por bairro
 atendimentos_por_bairro = df_filtrado.groupby('bairro').size().reset_index(name='Número de Atendimentos por Bairro')
 
-# Dividindo a lista de bairros em duas partes
 bairros_1 = atendimentos_por_bairro['bairro'][:len(atendimentos_por_bairro)//2]
 bairros_2 = atendimentos_por_bairro['bairro'][len(atendimentos_por_bairro)//2:]
 atendimentos_por_bairro_1 = atendimentos_por_bairro[atendimentos_por_bairro['bairro'].isin(bairros_1)]
@@ -72,7 +62,7 @@ atendimentos_por_bairro_2 = atendimentos_por_bairro[atendimentos_por_bairro['bai
 atendimentos_por_classificacao = df_filtrado.groupby('descricao').size().reset_index(name='Número de Atendimentos por Classificação')
 atendimentos_por_operador_classificacao = df_filtrado.groupby(['operador_abertura', 'descricao']).size().reset_index(name='Número de Atendimentos')
 
-# Removendo 'Indefinido'
+
 atendimentos_por_operador_periodo = atendimentos_por_operador_periodo[atendimentos_por_operador_periodo['operador_abertura'] != 'Indefinido']
 atendimentos_por_bairro_1 = atendimentos_por_bairro_1[atendimentos_por_bairro_1['bairro'] != 'Indefinido']
 atendimentos_por_bairro_2 = atendimentos_por_bairro_2[atendimentos_por_bairro_2['bairro'] != 'Indefinido']
@@ -111,7 +101,6 @@ fig_atendimento_operador_classificacao = px.bar(atendimentos_por_operador_classi
                                                 text_auto=True,
                                                 color='descricao',
                                                 title='Atendimentos por Operador e Classificação')
-
 
 
 

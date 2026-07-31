@@ -37,6 +37,7 @@ df_reincidencias['dentro_2_meses'] = (
 )
 ```
 
+
 O `groupby` impede que a comparação atravesse a fronteira entre clientes, e a primeira ocorrência de cada grupo fica como `NaT` — ou seja, não conta como reincidência.
 
 A saída é uma tabela de reincidências filtrável por cliente e por tipo de problema, acompanhada da contagem de ocorrências por cliente e por categoria — usada para priorizar visitas técnicas.
@@ -115,12 +116,3 @@ streamlit run home.py
 ```
 
 ---
-
-## Demonstração
-
-<!-- Adicione as capturas em docs/ e referencie aqui:
-![Atendimentos](docs/atendimentos.png)
-![Reincidências](docs/reincidencias.png)
--->
-
-_Capturas de tela em breve._

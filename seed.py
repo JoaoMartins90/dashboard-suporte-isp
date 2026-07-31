@@ -23,8 +23,6 @@ DIAS_DE_HISTORICO = 150
 TOTAL_ATENDIMENTOS = 600
 TOTAL_CLIENTES = 60
 
-# Processos que a página de Reincidências considera falha de conexão.
-# Os nomes precisam bater exatamente com a lista em pages/Reincidências.py.
 PROCESSOS_CONEXAO = [
     "Não Conecta",
     "Não Navega",
@@ -170,7 +168,6 @@ def popula_cadastros(con, rng):
 
 
 def monta_atendimento(cod, cliente, dia, cod_processo, rng, n_bairros, n_classes):
-    """Uma linha de mk_atendimento. ~70% dos chamados aparecem como finalizados."""
     finalizado = "S" if rng.random() < 0.7 else "N"
     if finalizado == "S":
         fecha = dia + timedelta(days=rng.randint(0, 5))
@@ -182,7 +179,7 @@ def monta_atendimento(cod, cliente, dia, cod_processo, rng, n_bairros, n_classes
     return (
         cod,
         cliente,
-        cliente,  # conexao usa o mesmo código do cliente
+        cliente, 
         formata(dia),
         rng.randint(1, n_bairros),
         rng.choice(OPERADORES),
@@ -192,7 +189,7 @@ def monta_atendimento(cod, cliente, dia, cod_processo, rng, n_bairros, n_classes
         dt_finaliza,
         operador_fim,
         cod_processo,
-        "N",  # recalculado pelo dashboard a partir de mk_ate_os
+        "N",
     )
 
 
@@ -215,7 +212,6 @@ def popula_atendimentos(con, rng, clientes, n_bairros, n_classes, n_processos):
             cod += 1
             dia += timedelta(days=rng.randint(6, 20))
 
-    # Volume geral, espalhado pelo histórico.
     while cod <= TOTAL_ATENDIMENTOS:
         dia = hoje - timedelta(days=rng.randint(0, DIAS_DE_HISTORICO))
         atendimentos.append(
@@ -226,8 +222,6 @@ def popula_atendimentos(con, rng, clientes, n_bairros, n_classes, n_processos):
         )
         cod += 1
 
-    # O filtro de período usa a data de hoje como valor inicial, então ela
-    # precisa existir na base — caso contrário o st.date_input quebra.
     atendimentos.append(
         monta_atendimento(cod, rng.choice(clientes), hoje,
                           rng.randint(1, n_processos), rng, n_bairros, n_classes)

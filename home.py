@@ -21,8 +21,6 @@ st.markdown(
 
 st.divider()
 
-# A conexão pode falhar por falta de banco configurado ou de base de exemplo.
-# Nesse caso vale orientar em vez de deixar o traceback estourar na tela.
 try:
     df = carrega_resumo()
 except Exception as erro:
